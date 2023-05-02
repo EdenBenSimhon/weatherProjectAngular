@@ -20,65 +20,50 @@ http.createServer(function (request, response) {
   if(request.method=='POST') {
 
     request.on('data', (chunk) => {
-      console.log(chunk.toString())
-       temp += chunk.toString()
+      getCoordinatesFromClient(chunk);
+      readAPIWeather();
+     //readAPILocation();
+
+
     });
     request.on('end',()=>{
-      console.log(temp)
 
     })
-  } //if the method is POST we need get the coordination from params
-  //readAPIWeather();
-    readAPILocation();
+
+  }
+  //  readAPILocation();
+
   response.end(JSON.stringify(details));
+  cleanData();
 }).listen(3000,  () => {
   console.log('Server started on port 3000');
 });
 
-const url = "https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(1)+"&longitude="+parseFloat(1)+"&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
 function  readAPIWeather() {
-  cleanString();
+  const url = "https://api.open-meteo.com/v1/dwd-icon?latitude="+parseFloat(lat)+"&longitude="+parseFloat(long)+"&current_weather=true&minutely_15=rain&timezone=auto";
   https.get(url, (resp) => {
     let data = ""
     // A chunk of data has been received.
     resp.on('data', (chunk) => {
       details += chunk;
+
     });
 
     resp.on('end', () => {
       //console.log(JSON.parse(data));
-      console.log(details);
-      lat=""
-      long =""
-    });
+      findTheTemperatureAndRain();
 
+    });
 
   }).on("error", (err) => {
     console.log("Error: " + err.message);
   });
-
-
-
-}
-function cleanString(){
-  let body =0;
-  for (let i =0; i <temp.length; i++) {
-    if (temp[i] == ",") {
-      body = 1
-    }
-    if (temp[i] != "[" && temp[i] != "]" && body == 0) {
-      lat += temp[i].toString();
-    } else if (temp[i] != "[" && temp[i] != "]" && body == 1) {
-      long += temp[i].toString();
-    }
-  }
-  long = long.substring(1)
-  console.log("lat value:  " +1 +"   long value  :" + 1);
+  console.log("readAPIWeather");
 
 }
+
 function readAPILocation(){
-const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat=32.079872&lon=34.9831168&apiKey=e1cea055d0c345dc9853bc28ccead0d7"
-
+const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat="+parseFloat(lat)+"&lon="+parseFloat(long)+"&apiKey=e1cea055d0c345dc9853bc28ccead0d7"
 
   https.get(url1, (resp) => {
     let data = ""
@@ -88,10 +73,50 @@ const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat=32.079872&lon=34.
     });
 
     resp.on('end', () => {
+      findNameLocationFromJSON()
 
-      console.log(details);
     })
   });
+  console.log("readAPILocation");
 }
 
 
+function getCoordinatesFromClient(chunk) {
+  temp = JSON.parse(chunk.toString())
+  temp = Object.values(temp)
+
+//console.log(temp[0])
+  lat = parseFloat(temp[0]);
+  long = parseFloat(temp[1]);
+  console.log("getCoordinatesFromClient");
+
+}
+
+
+function findTheTemperatureAndRain(){
+  temp = JSON.parse(details)
+
+  var finalData = temp['current_weather'];
+  var temperature = finalData["temperature"]
+  let date = new Date()
+  console.log(date)
+  var tempDate = date.toString()
+  date.
+  console.log(temperature)
+
+
+}
+
+function cleanData(){
+  details = ""
+
+}
+
+function findNameLocationFromJSON(){
+  temp = JSON.parse(details)
+  var finaldata = temp['features']
+  console.log((JSON.stringify(Object.values(finaldata))))
+
+
+
+}

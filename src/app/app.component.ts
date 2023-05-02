@@ -18,17 +18,19 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.getLocation();
     //this.postCoordinates(this.latLong)
-    this.getData();
+    //this.getData();
 
   }
 
-  getData() {
+  /*getData() {
 
     this.httpClient.get<any>('http://localhost:3000').subscribe((response: any) => {
       this.message = response;
       console.log(response)
     });
   }
+  */
+
 
   getLocation() {
 
@@ -37,17 +39,18 @@ export class AppComponent implements OnInit {
     }
     navigator.geolocation.getCurrentPosition((position) => {
       const coords = position.coords;
-      this.latLong = [coords.latitude, coords.longitude];
+      this.latLong = {"latitude": coords.latitude , "longitude:" :coords.longitude};
+      //this.latLong = [coords.latitude, coords.longitude];
       console.log(`lat: ${position.coords.latitude}, lon: ${position.coords.longitude}`);
       this.postCoordinates(this.latLong)
     });
   }
-
   postCoordinates(latLong:any) {
     this.httpClient.post('http://localhost:3000', JSON.stringify(this.latLong), {})
       .subscribe(data => {
         //console.log(data);
-        console.log(latLong)
+        this.message = data;
+        console.log(data)
       });
   }
 }
