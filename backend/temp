@@ -1,0 +1,38 @@
+[
+  'Feature',
+  {
+    datasource: {
+      sourcename: 'openstreetmap',
+      attribution: '© OpenStreetMap contributors',
+      license: 'Open Database License',
+      url: 'https://www.openstreetmap.org/copyright'
+    },
+    country: 'Israel',
+    country_code: 'il',
+    state: 'Center District',
+    county: 'Petah Tikva Subdistrict',
+    city: 'Rosh HaAyin',
+    suburb: 'Pras Nobel',
+    road: 'Pras Nobel',
+    lon: 34.983035650000005,
+    lat: 32.0802389,
+    distance: 16.553753590457823,
+    result_type: 'suburb',
+    formatted: 'Pras Nobel, Rosh HaAyin, Petah Tikva Subdistrict, Israel',
+    address_line1: 'Pras Nobel',
+    address_line2: 'Rosh HaAyin, Petah Tikva Subdistrict, Israel',
+    timezone: {
+      name: 'Asia/Jerusalem',
+      offset_STD: '+02:00',
+      offset_STD_seconds: 7200,
+      offset_DST: '+03:00',
+      offset_DST_seconds: 10800,
+      abbreviation_STD: 'IST',
+      abbreviation_DST: 'IDT'
+    },
+    rank: { importance: 0.10000999999999993, popularity: 4.468160362268527 },
+    place_id: '51acc6b71cd47d414059faaead44450a4040f00102f90135d5b42c00000000c00205'
+  },
+  { type: 'Point', coordinates: [ 34.983035650000005, 32.0802389 ] },
+  [ 34.9827901, 32.080014, 34.9832812, 32.0804301 ]
+]

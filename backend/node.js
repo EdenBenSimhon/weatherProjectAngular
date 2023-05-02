@@ -10,6 +10,8 @@ const {parse} = require("request/lib/cookies");
 var lat =""
 var long =""
 var temp =""
+var returnTheData =''
+var result=""
 
 http.createServer(function (request, response) {
   response.writeHead(200, {
@@ -21,8 +23,9 @@ http.createServer(function (request, response) {
 
     request.on('data', (chunk) => {
       getCoordinatesFromClient(chunk);
-      readAPIWeather();
-     //readAPILocation();
+      readAPILocation();
+      //readAPIWeather();
+
 
 
     });
@@ -32,7 +35,6 @@ http.createServer(function (request, response) {
 
   }
   //  readAPILocation();
-
   response.end(JSON.stringify(details));
   cleanData();
 }).listen(3000,  () => {
@@ -40,7 +42,7 @@ http.createServer(function (request, response) {
 });
 
 function  readAPIWeather() {
-  const url = "https://api.open-meteo.com/v1/dwd-icon?latitude="+parseFloat(lat)+"&longitude="+parseFloat(long)+"&current_weather=true&minutely_15=rain&timezone=auto";
+  const url = "https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(lat)+"&longitude="+parseFloat(long)+"&current_weather=true&hourly=rain&timezone=auto";
   https.get(url, (resp) => {
     let data = ""
     // A chunk of data has been received.
@@ -73,10 +75,11 @@ const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat="+parseFloat(lat)
     });
 
     resp.on('end', () => {
-      findNameLocationFromJSON()
+      findNameLocationFromJSON();
 
     })
   });
+
   console.log("readAPILocation");
 }
 
@@ -98,11 +101,21 @@ function findTheTemperatureAndRain(){
 
   var finalData = temp['current_weather'];
   var temperature = finalData["temperature"]
-  let date = new Date()
-  console.log(date)
-  var tempDate = date.toString()
-  date.
-  console.log(temperature)
+  var findTheTimeNow =finalData['time'];
+  console.log(findTheTimeNow)
+  var counter = findTheTimeNow.substring(11,13);
+  console.log(counter)
+  var tempOfRain = temp['hourly']
+  console.log(tempOfRain['rain'])
+  var tempOfTempRain=tempOfRain['rain']
+  console.log(tempOfTempRain[counter])
+  returnTheData = {
+    "temperature": temperature ,
+    "rain": tempOfTempRain[counter]
+  }
+  return returnTheData;
+
+
 
 
 }
@@ -115,8 +128,37 @@ function cleanData(){
 function findNameLocationFromJSON(){
   temp = JSON.parse(details)
   var finaldata = temp['features']
-  console.log((JSON.stringify(Object.values(finaldata))))
+  console.log(Object.keys(finaldata))
+  var ca =finaldata['0']
+  var tempCountry = ca['properties']
+  var country = tempCountry['country']
+  var city = tempCountry['city']
 
+  var location = { "address": city +","+ country}
+  console.log(location)
+
+  return location;
+}
+
+
+function checkTheRule(location,weather){
+  var recommend =''
+  if(weather['temperature']>22&& weather['rain'] == 0)
+  {
+    recommend = "לבוש קצר";
+  }
+  else if (weather['temperature']<=22 && weather['rain']==0){
+    recommend= "לבוש ארוך"
+  }
+  else {
+    recommend = "מעיל"
+  }
+  var finalResult = {
+    "temperature": weather['temperature'] ,
+    "address" : location['address'],
+    "recommend" : recommend
+  }
+  return finalResult;
 
 
 }

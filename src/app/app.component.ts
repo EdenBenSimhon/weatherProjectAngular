@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
     this.httpClient.post('http://localhost:3000', JSON.stringify(this.latLong), {})
       .subscribe(data => {
         //console.log(data);
-        this.message = data;
+        this.message = data.toLocaleString();
         console.log(data)
       });
   }
