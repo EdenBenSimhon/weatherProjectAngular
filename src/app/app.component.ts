@@ -17,19 +17,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.getLocation();
-    //this.postCoordinates(this.latLong)
-    //this.getData();
+
 
   }
 
-  /*getData() {
-
-    this.httpClient.get<any>('http://localhost:3000').subscribe((response: any) => {
-      this.message = response;
-      console.log(response)
-    });
-  }
-  */
 
 
   getLocation() {

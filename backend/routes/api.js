@@ -1,125 +1,71 @@
 const https = require("https");
-const findJSON = require("./findDataInJSON");
 const express = require("express");
 const app = express();
 const request = require('request');
+const axios = require("axios");
 
-var details =""
-async function getLocation(latLong){
-  console.log(latLong)
-  let data=""
-  const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat="+parseFloat(latLong[0])+"&lon="+parseFloat(latLong[1])+"&apiKey=e1cea055d0c345dc9853bc28ccead0d7"
-  https.get(url1, (resp) => {
-    // A chunk of data has been received.
-    resp.on('data', (chunk) => {
-      data += chunk;
-      //console.log(chunk)
 
-    });
-    resp.on('end', () => {
-      //findNameLocationFromJSON();
-      //console.log(findAddressNameInJSON(data));
-    })
-  });
-  //console.log(findAddressNameInJSON(data))
-  console.log(data);
+
+
+//The function addresses the API with coordinates in order to get the location name of the coordinates
+async function getLocation(coordinates){
+  var jsonLocation = await axios.get("https://api.geoapify.com/v1/geocode/reverse?lat="+parseFloat(coordinates[0])+"&lon="+parseFloat(coordinates[1])+"&apiKey=e1cea055d0c345dc9853bc28ccead0d7");
+  return await findAddressNameInJSON(jsonLocation.data)
 }
+//The function addresses the API with coordinates in order to receive the weather at the sent location
 async function  getWeather(coordinates) {
-  var details="";
-  let data = ""
-  const url = "https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(coordinates[0])+"&longitude="+parseFloat(coordinates[1])+"&current_weather=true&hourly=rain&timezone=auto";
-  https.get(url, (resp) => {
-    resp.on('data', (chunk) => {
-      details += chunk;
-    });
-
-    resp.on('end', () => {
-
-     findTemperatureAndRainInJSON(details)
-    });
-
-  }).on("error", (err) => {
-    console.log("Error: " + err.message);
-  });
-  console.log(details)
-
-  return data;
+  var jsonWeather = await axios.get("https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(coordinates[0])+"&longitude="+parseFloat(coordinates[1])+"&current_weather=true&hourly=rain&timezone=auto");
+  return await findTemperatureAndRainInJSON(jsonWeather.data)
 }
 
 
+
+//The function extracts the coordinates from the received data requested from the client
 function getCoordinatesFromClient(data) {
-  console.log(data)
   return [data['latitude'],data['longitude']];
-  //var temp = JSON.parse(chunk.toString())
-  //temp = Object.values(temp)
-  //lat = parseFloat(temp[0]);
-  //long = parseFloat(temp[1]);
-  //console.log("getCoordinatesFromClient");
-  //return [lat ,long] ;
-
 }
 
-
-function findAddressNameInJSON(details){
+//The function extracts the address name from the information received as a result of the application to the API
+async function findAddressNameInJSON(details){
   //temp = JSON.parse(details)
-  var finaldata = details['features']
-  console.log(Object.keys(finaldata))
-  var ca =finaldata['0']
-  var tempCountry = ca['properties']
-  var country = tempCountry['country']
-  var city = tempCountry['city']
-
+  var country = details.features[0].properties.country;
+  var city = details.features[0].properties.city;
   var location = { "address": city +","+ country}
-  return location;
+  return  location;
 }
 
 
-function checkTheRule(location,weather){
-  var recommend =''
+//The function extracts the weather and rain from the information received as a result of the application to the API
+async function findTemperatureAndRainInJSON(details) {
+  var temperature = details.current_weather.temperature;
+  var liveTime = details.current_weather.time;
+  var lastHour = liveTime.substring(11, 13); //getTheLastHour
+  var rain = details.hourly.rain;
+  temperatureAndSumOfRain = {
+    "temperature": Math.round(temperature) ,
+    "rain": rain[lastHour]
+  }
+  return temperatureAndSumOfRain;
+}
+
+
+function WhatToWearToday(weather){
+  var recommendation;
   if(weather['temperature']>22&& weather['rain'] == 0)
   {
-    recommend = "לבוש קצר";
+    recommendation = "לבוש קצר";
   }
   else if (weather['temperature']<=22 && weather['rain']==0){
-    recommend= "לבוש ארוך"
+    recommendation= "לבוש ארוך"
   }
   else {
-    recommend = "מעיל"
+    recommendation = "מעיל"
   }
-  var finalResult = {
-    "temperature": weather['temperature'] ,
-    "address" : location['address'],
-    "recommend" : recommend
-  }
-  return finalResult;
+
+  return recommendation;
 
 
 }
 
 
-function getResponse(chunk){
-  var coordinates = getCoordinatesFromClient(chunk);
-  getWeather(coordinates);
-
-
-
-
-}
-
-function findTemperatureAndRainInJSON(details) {
-  //var temp = JSON.parse(details)
-
-  var finalData = details['current_weather'];
-  var temperature = finalData["temperature"]
-  var findTheTimeNow = finalData['time'];
-  var counter = findTheTimeNow.substring(11, 13);
-  var tempOfRain = details['hourly']
-  var tempOfTempRain = tempOfRain['rain']
-  returnTheData = {
-    "temperature": temperature,
-    "rain": tempOfTempRain[counter]
-  }
-  return returnTheData;
-}
-
-module.exports = {getLocation,getWeather,getResponse,getCoordinatesFromClient,findAddressNameInJSON,findTemperatureAndRainInJSON}
+module.exports = {getLocation,getWeather,getCoordinatesFromClient,WhatToWearToday}
