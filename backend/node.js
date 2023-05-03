@@ -1,6 +1,13 @@
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+const JSONfile = require("./routes/findDataInJSON")
+const api = require ("./routes/api")
+const querystring = require('querystring')
+
 var http = require('http')
 var fs = require('fs');
-var api = require('./OpenMeteoAPI')
 const https = require("https");
 const request = require("request");
 const bodyParser = require('body-parser');
@@ -22,10 +29,9 @@ http.createServer(function (request, response) {
   if(request.method=='POST') {
 
     request.on('data', (chunk) => {
-      getCoordinatesFromClient(chunk);
-      readAPILocation();
-      //readAPIWeather();
 
+       result = api.getResponse(chunk);
+      const cordi = require ("./model/coordinators")
 
 
     });
@@ -34,13 +40,24 @@ http.createServer(function (request, response) {
     })
 
   }
+  console.log(querystring.parse(result))
   //  readAPILocation();
-  response.end(JSON.stringify(details));
-  cleanData();
+  response.end(JSON.stringify("hello"));
 }).listen(3000,  () => {
   console.log('Server started on port 3000');
 });
 
+
+
+
+
+
+
+
+
+
+
+/*
 function  readAPIWeather() {
   const url = "https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(lat)+"&longitude="+parseFloat(long)+"&current_weather=true&hourly=rain&timezone=auto";
   https.get(url, (resp) => {
@@ -63,7 +80,9 @@ function  readAPIWeather() {
   console.log("readAPIWeather");
 
 }
+*/
 
+/*
 function readAPILocation(){
 const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat="+parseFloat(lat)+"&lon="+parseFloat(long)+"&apiKey=e1cea055d0c345dc9853bc28ccead0d7"
 
@@ -84,17 +103,8 @@ const url1 =  "https://api.geoapify.com/v1/geocode/reverse?lat="+parseFloat(lat)
 }
 
 
-function getCoordinatesFromClient(chunk) {
-  temp = JSON.parse(chunk.toString())
-  temp = Object.values(temp)
-
-//console.log(temp[0])
-  lat = parseFloat(temp[0]);
-  long = parseFloat(temp[1]);
-  console.log("getCoordinatesFromClient");
-
-}
-
+*/
+/*
 
 function findTheTemperatureAndRain(){
   temp = JSON.parse(details)
@@ -115,33 +125,15 @@ function findTheTemperatureAndRain(){
   }
   return returnTheData;
 
-
-
-
 }
-
-function cleanData(){
-  details = ""
-
-}
-
-function findNameLocationFromJSON(){
-  temp = JSON.parse(details)
-  var finaldata = temp['features']
-  console.log(Object.keys(finaldata))
-  var ca =finaldata['0']
-  var tempCountry = ca['properties']
-  var country = tempCountry['country']
-  var city = tempCountry['city']
-
-  var location = { "address": city +","+ country}
-  console.log(location)
-
-  return location;
-}
+*/
 
 
-function checkTheRule(location,weather){
+
+
+
+
+/*function checkTheRule(location,weather){
   var recommend =''
   if(weather['temperature']>22&& weather['rain'] == 0)
   {
@@ -162,3 +154,7 @@ function checkTheRule(location,weather){
 
 
 }
+ */
+
+
+

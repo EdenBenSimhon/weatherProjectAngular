@@ -39,17 +39,17 @@ export class AppComponent implements OnInit {
     }
     navigator.geolocation.getCurrentPosition((position) => {
       const coords = position.coords;
-      this.latLong = {"latitude": coords.latitude , "longitude:" :coords.longitude};
+      this.latLong = {"latitude": coords.latitude , "longitude": coords.longitude};
       //this.latLong = [coords.latitude, coords.longitude];
       console.log(`lat: ${position.coords.latitude}, lon: ${position.coords.longitude}`);
       this.postCoordinates(this.latLong)
     });
   }
   postCoordinates(latLong:any) {
-    this.httpClient.post('http://localhost:3000', JSON.stringify(this.latLong), {})
+    this.httpClient.post('http://localhost:3000', this.latLong, {})
       .subscribe(data => {
         //console.log(data);
-        this.message = data.toLocaleString();
+        this.message = data;
         console.log(data)
       });
   }
