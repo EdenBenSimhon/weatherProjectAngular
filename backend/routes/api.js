@@ -14,6 +14,7 @@ async function getLocation(coordinates){
 }
 //The function addresses the API with coordinates in order to receive the weather at the sent location
 async function  getWeather(coordinates) {
+  console.log(coordinates)
   var jsonWeather = await axios.get("https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(coordinates[0])+"&longitude="+parseFloat(coordinates[1])+"&current_weather=true&hourly=rain&timezone=auto");
   return await findTemperatureAndRainInJSON(jsonWeather.data)
 }
@@ -39,8 +40,9 @@ async function findAddressNameInJSON(details){
 async function findTemperatureAndRainInJSON(details) {
   var temperature = details.current_weather.temperature;
   var liveTime = details.current_weather.time;
-  var lastHour = liveTime.substring(11, 13); //getTheLastHour
-  var rain = details.hourly.rain;
+  var lastHour = parseInt(liveTime.substring(11, 13));
+  console.log(lastHour)//getTheLastHour
+  var rain = (details.hourly.rain);
   temperatureAndSumOfRain = {
     "temperature": Math.round(temperature) ,
     "rain": rain[lastHour]
@@ -51,11 +53,11 @@ async function findTemperatureAndRainInJSON(details) {
 
 function WhatToWearToday(weather){
   var recommendation;
-  if(weather['temperature']>22&& weather['rain'] == 0)
+  if(weather['temperature']>=22&& weather['rain'] == 0)
   {
     recommendation = "לבוש קצר";
   }
-  else if (weather['temperature']<=22 && weather['rain']==0){
+  else if (weather['temperature']<22 && weather['rain']==0){
     recommendation= "לבוש ארוך"
   }
   else {
