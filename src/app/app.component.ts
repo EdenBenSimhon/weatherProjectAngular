@@ -1,49 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {response} from "express";
+import {WeatherService} from "./wheater-window/weather.service";
+import {WeatherInterface} from "./wheater-window/weather.interface";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent{
   title = 'weatherProjectAngular';
-  message: any
-  latLong: any
 
-  constructor(private httpClient: HttpClient) {
-  }
-
-  ngOnInit() {
-    this.getLocation();
-
-
-  }
-
-
-
-  getLocation() {
-
-    if (!navigator.geolocation) {
-      console.log('location is not supported');
-    }
-    navigator.geolocation.getCurrentPosition((position) => {
-      const coords = position.coords;
-      this.latLong = {"latitude": coords.latitude , "longitude": coords.longitude};
-      //this.latLong = [coords.latitude, coords.longitude];
-      console.log(`lat: ${position.coords.latitude}, lon: ${position.coords.longitude}`);
-      this.postCoordinates(this.latLong)
-    });
-  }
-  postCoordinates(latLong:any) {
-    this.httpClient.post('http://localhost:3000', this.latLong, {})
-      .subscribe(data => {
-        //console.log(data);
-        this.message = data;
-        console.log(data)
-      });
-  }
 }
 
 

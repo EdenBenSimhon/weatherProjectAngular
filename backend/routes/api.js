@@ -41,7 +41,6 @@ async function findTemperatureAndRainInJSON(details) {
   var temperature = details.current_weather.temperature;
   var liveTime = details.current_weather.time;
   var lastHour = parseInt(liveTime.substring(11, 13));
-  console.log(lastHour)//getTheLastHour
   var rain = (details.hourly.rain);
   temperatureAndSumOfRain = {
     "temperature": Math.round(temperature) ,

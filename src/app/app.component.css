@@ -1,3 +1,16 @@
-*{
-  font-family: "Segoe UI ";
+
+.title {
+  font-weight: lighter;
+  font-size: 60px;
 }
+.header {
+  top: 0;
+  left: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 60%;
+  transform: translate(-0%, -0%);
+
+
+}
+
