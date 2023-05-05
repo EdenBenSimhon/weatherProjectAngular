@@ -3,8 +3,7 @@ const express = require("express");
 const app = express();
 const request = require('request');
 const axios = require("axios");
-
-
+const  limitTemperature=22;
 
 
 //The function addresses the API with coordinates in order to get the location name of the coordinates
@@ -18,29 +17,23 @@ async function  getWeather(coordinates) {
   var jsonWeather = await axios.get("https://api.open-meteo.com/v1/forecast?latitude="+parseFloat(coordinates[0])+"&longitude="+parseFloat(coordinates[1])+"&current_weather=true&hourly=rain&timezone=auto");
   return await findTemperatureAndRainInJSON(jsonWeather.data)
 }
-
-
-
 //The function extracts the coordinates from the received data requested from the client
 function getCoordinatesFromClient(data) {
   return [data['latitude'],data['longitude']];
 }
-
 //The function extracts the address name from the information received as a result of the application to the API
 async function findAddressNameInJSON(details){
-  //temp = JSON.parse(details)
   var country = details.features[0].properties.country;
   var city = details.features[0].properties.city;
   var location = { "address": city +","+ country}
   return  location;
 }
 
-
 //The function extracts the weather and rain from the information received as a result of the application to the API
 async function findTemperatureAndRainInJSON(details) {
   var temperature = details.current_weather.temperature;
-  var liveTime = details.current_weather.time;
-  var lastHour = parseInt(liveTime.substring(11, 13));
+  var realTime = details.current_weather.time;
+  var lastHour = parseInt(realTime.substring(11, 13));
   var rain = (details.hourly.rain);
   temperatureAndSumOfRain = {
     "temperature": Math.round(temperature) ,
@@ -49,24 +42,18 @@ async function findTemperatureAndRainInJSON(details) {
   return temperatureAndSumOfRain;
 }
 
-
+//The function determines what to wear today
 function WhatToWearToday(weather){
-  var recommendation;
-  if(weather['temperature']>=22&& weather['rain'] == 0)
+  if(weather['temperature']>=limitTemperature&& weather['rain'] == 0)
   {
-    recommendation = "לבוש קצר";
+    return  "לבוש קצר";
   }
-  else if (weather['temperature']<22 && weather['rain']==0){
-    recommendation= "לבוש ארוך"
+  else if (weather['temperature']<limitTemperature && weather['rain']==0){
+    return "לבוש ארוך";
   }
   else {
-    recommendation = "מעיל"
+    return "מעיל";
   }
-
-  return recommendation;
-
-
 }
-
 
 module.exports = {getLocation,getWeather,getCoordinatesFromClient,WhatToWearToday}

@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {response} from "express";
-import {WeatherService} from "./wheater-window/weather.service";
-import {WeatherInterface} from "./wheater-window/weather.interface";
-
+import {WeatherService} from "./weather-window/weather.service";
+import {WeatherInterface} from "./weather-window/weather.interface";
+import * as express from 'express';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,7 +11,6 @@ import {WeatherInterface} from "./wheater-window/weather.interface";
 })
 export class AppComponent{
   title = 'weatherProjectAngular';
-
 }
 
 
